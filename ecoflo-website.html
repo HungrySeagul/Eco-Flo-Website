@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Eco-Flo — Sip Slow, We Won't Go Soggy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --forest: #1B4332;
+      --sage:   #52B788;
+      --mint:   #D8F3DC;
+      --cream:  #F8FAF8;
+      --white:  #FFFFFF;
+      --ink:    #0A1A12;
+      --mid:    #2D6A4F;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--white);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--mint); }
+    ::-webkit-scrollbar-thumb { background: var(--forest); border-radius: 2px; }
+
+    /* ── CURSOR DOT ── */
+    .cursor {
+      position: fixed; width: 10px; height: 10px;
+      background: var(--sage); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.3s, height 0.3s, opacity 0.3s;
+      mix-blend-mode: multiply;
+    }
+    .cursor.expand { width: 40px; height: 40px; opacity: 0.4; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.4rem 5vw;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(27,67,50,0.08);
+      transition: all 0.4s ease;
+    }
+    nav.scrolled {
+      padding: 1rem 5vw;
+      background: rgba(255,255,255,0.97);
+      box-shadow: 0 4px 30px rgba(27,67,50,0.08);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; font-weight: 600;
+      color: var(--forest); letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--sage); font-style: italic; }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.85rem; font-weight: 500;
+      color: var(--forest); text-decoration: none;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      position: relative; padding-bottom: 3px;
+      transition: color 0.3s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute;
+      bottom: 0; left: 0; right: 0; height: 1.5px;
+      background: var(--sage); transform: scaleX(0);
+      transform-origin: right; transition: transform 0.35s ease;
+    }
+    .nav-links a:hover { color: var(--sage); }
+    .nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
+    .nav-cta {
+      background: var(--forest); color: var(--white) !important;
+      padding: 0.5rem 1.2rem !important; border-radius: 50px;
+      transition: background 0.3s ease, transform 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--sage) !important; transform: translateY(-1px); }
+    .nav-cta::after { display: none !important; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh; display: flex; align-items: center;
+      background: var(--cream);
+      position: relative; overflow: hidden;
+      padding: 8rem 5vw 5rem;
+    }
+    .hero-bg-leaf {
+      position: absolute; right: -100px; top: 50%;
+      transform: translateY(-50%);
+      width: 640px; height: 640px;
+      background: radial-gradient(ellipse at center, var(--mint) 0%, transparent 70%);
+      border-radius: 50%; pointer-events: none;
+      animation: floatBg 8s ease-in-out infinite;
+    }
+    @keyframes floatBg {
+      0%, 100% { transform: translateY(-50%) scale(1); }
+      50% { transform: translateY(-52%) scale(1.04); }
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; gap: 4rem;
+      max-width: 1200px; margin: 0 auto; width: 100%;
+      position: relative; z-index: 2;
+    }
+    .hero-tagline {
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: 1.2rem;
+      opacity: 0; animation: slideUp 0.8s 0.2s forwards;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.2rem, 6vw, 5.5rem);
+      font-weight: 300; line-height: 1.05;
+      color: var(--forest); margin-bottom: 1.5rem;
+      opacity: 0; animation: slideUp 0.9s 0.4s forwards;
+    }
+    .hero-title em { font-style: italic; color: var(--sage); }
+    .hero-subtitle {
+      font-size: 1.05rem; font-weight: 300;
+      color: #3d5a47; line-height: 1.7;
+      max-width: 480px; margin-bottom: 2.5rem;
+      opacity: 0; animation: slideUp 0.9s 0.6s forwards;
+    }
+    .hero-actions {
+      display: flex; gap: 1rem; align-items: center;
+      opacity: 0; animation: slideUp 0.9s 0.8s forwards;
+    }
+    .btn-primary {
+      background: var(--forest); color: var(--white);
+      padding: 0.9rem 2rem; border-radius: 50px;
+      font-size: 0.85rem; font-weight: 500;
+      letter-spacing: 0.05em; text-decoration: none;
+      transition: all 0.35s ease;
+      border: 2px solid var(--forest);
+    }
+    .btn-primary:hover {
+      background: var(--sage); border-color: var(--sage);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(82,183,136,0.3);
+    }
+    .btn-outline {
+      border: 1.5px solid var(--forest); color: var(--forest);
+      padding: 0.9rem 2rem; border-radius: 50px;
+      font-size: 0.85rem; font-weight: 500;
+      letter-spacing: 0.05em; text-decoration: none;
+      transition: all 0.35s ease;
+    }
+    .btn-outline:hover {
+      background: var(--mint); transform: translateY(-2px);
+    }
+    .hero-visual {
+      display: flex; justify-content: center; align-items: center;
+      opacity: 0; animation: slideLeft 1s 0.5s forwards;
+    }
+    .straw-showcase {
+      position: relative; width: 300px; height: 400px;
+    }
+    .straw-card {
+      position: absolute; background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(27,67,50,0.12);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .straw-card-main {
+      width: 240px; height: 320px; left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, var(--forest), var(--mid));
+      overflow: hidden;
+    }
+    .straw-visual-inner {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0.5rem; padding: 2rem;
+    }
+    .straw-stick {
+      width: 18px; height: 160px;
+      background: linear-gradient(to bottom, #fff, #d8f3dc, #52B788);
+      border-radius: 9px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.3);
+      animation: strawFloat 3s ease-in-out infinite;
+    }
+    @keyframes strawFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .straw-label {
+      color: white; font-size: 0.7rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      font-weight: 500; text-align: center; line-height: 1.6;
+    }
+    .straw-badge {
+      position: absolute; top: 10px; right: -20px;
+      background: var(--sage); color: white;
+      width: 90px; height: 90px; border-radius: 50%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      text-align: center; line-height: 1.4;
+      animation: spin 20s linear infinite;
+      box-shadow: 0 8px 20px rgba(82,183,136,0.4);
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .straw-badge span { font-size: 1.1rem; font-weight: 700; display: block; }
+    .straw-tag {
+      position: absolute; bottom: 0; left: -30px;
+      background: var(--mint); border-radius: 14px;
+      padding: 0.8rem 1rem; font-size: 0.72rem;
+      color: var(--forest); font-weight: 500;
+      box-shadow: 0 8px 24px rgba(27,67,50,0.1);
+      white-space: nowrap;
+    }
+
+    /* ── STATS STRIP ── */
+    .stats-strip {
+      background: var(--forest);
+      padding: 3rem 5vw;
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 2rem; max-width: 1100px; margin: 0 auto;
+    }
+    .stat-item { text-align: center; }
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem; font-weight: 600;
+      color: var(--sage); line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.78rem; font-weight: 400;
+      color: var(--mint); letter-spacing: 0.08em;
+      text-transform: uppercase; margin-top: 0.4rem;
+    }
+
+    /* ── SECTION SHARED ── */
+    section { padding: 7rem 5vw; }
+    .section-tag {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 4vw, 3.5rem);
+      font-weight: 300; line-height: 1.12;
+      color: var(--forest); margin-bottom: 1.5rem;
+    }
+    .section-title em { font-style: italic; color: var(--sage); }
+    .section-body {
+      font-size: 1rem; font-weight: 300;
+      color: #3d5a47; line-height: 1.8; max-width: 560px;
+    }
+
+    /* ── PHILOSOPHY / ABOUT ── */
+    #philosophy { background: var(--white); }
+    .philosophy-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1.1fr;
+      gap: 6rem; align-items: center;
+    }
+    .philosophy-text .section-body { margin-bottom: 2rem; }
+    .philosophy-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; font-style: italic;
+      color: var(--forest); border-left: 3px solid var(--sage);
+      padding-left: 1.5rem; line-height: 1.6;
+      margin-top: 2rem;
+    }
+    .philosophy-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .philo-card {
+      background: var(--cream);
+      border-radius: 20px; padding: 1.8rem;
+      border: 1px solid rgba(27,67,50,0.06);
+      transition: all 0.35s ease; cursor: default;
+    }
+    .philo-card:hover {
+      background: var(--mint);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(27,67,50,0.08);
+    }
+    .philo-icon { font-size: 1.8rem; margin-bottom: 0.8rem; }
+    .philo-card h4 {
+      font-weight: 600; font-size: 0.9rem;
+      color: var(--forest); margin-bottom: 0.4rem;
+    }
+    .philo-card p {
+      font-size: 0.82rem; color: #3d5a47;
+      font-weight: 300; line-height: 1.6;
+    }
+
+    /* ── PRODUCT ── */
+    #product { background: var(--cream); }
+    .product-inner { max-width: 1200px; margin: 0 auto; }
+    .product-header { text-align: center; margin-bottom: 5rem; }
+    .product-header .section-body { margin: 0 auto; text-align: center; }
+    .product-tabs { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 4rem; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 0.55rem 1.4rem; border-radius: 50px;
+      font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.05em; cursor: pointer;
+      border: 1.5px solid rgba(27,67,50,0.15);
+      background: transparent; color: var(--forest);
+      transition: all 0.3s ease;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--forest); color: white;
+      border-color: var(--forest);
+    }
+    .product-panels { position: relative; min-height: 420px; }
+    .product-panel {
+      display: none;
+      grid-template-columns: 1fr 1fr; gap: 5rem;
+      align-items: center;
+    }
+    .product-panel.active { display: grid; animation: fadePanel 0.5s ease; }
+    @keyframes fadePanel {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .panel-text .section-title { font-size: clamp(1.8rem, 3vw, 2.8rem); }
+    .feature-list { list-style: none; margin-top: 1.5rem; }
+    .feature-list li {
+      display: flex; align-items: flex-start; gap: 0.8rem;
+      padding: 0.9rem 0; border-bottom: 1px solid rgba(27,67,50,0.06);
+      font-size: 0.92rem; font-weight: 300; color: #3d5a47; line-height: 1.6;
+    }
+    .feature-list li::before {
+      content: ''; width: 6px; height: 6px;
+      background: var(--sage); border-radius: 50%;
+      flex-shrink: 0; margin-top: 0.55rem;
+    }
+    .feature-list li strong { color: var(--forest); font-weight: 500; }
+    .panel-visual {
+      border-radius: 28px; overflow: hidden;
+      height: 380px; position: relative;
+    }
+    .panel-visual-bg {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .viz-performance {
+      background: linear-gradient(135deg, #081c12 0%, var(--forest) 100%);
+    }
+    .viz-material {
+      background: linear-gradient(135deg, var(--mid) 0%, #40916c 100%);
+    }
+    .viz-responsibility {
+      background: linear-gradient(135deg, #1b4332 0%, #52b788 100%);
+    }
+    .viz-icon { font-size: 6rem; opacity: 0.15; position: absolute; }
+    .viz-content {
+      position: relative; z-index: 2;
+      text-align: center; padding: 2rem;
+    }
+    .viz-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 5rem; font-weight: 300; color: white;
+      line-height: 1; margin-bottom: 0.3rem;
+    }
+    .viz-unit { font-size: 0.9rem; color: rgba(255,255,255,0.7); letter-spacing: 0.1em; text-transform: uppercase; }
+    .cert-badges { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-top: 1.5rem; }
+    .cert-badge {
+      background: rgba(255,255,255,0.15); color: white;
+      padding: 0.4rem 0.9rem; border-radius: 50px;
+      font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      background: var(--forest); padding: 1.2rem 0;
+      overflow: hidden; border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .marquee-track {
+      display: flex; gap: 3rem;
+      animation: marquee 25s linear infinite;
+      white-space: nowrap;
+    }
+    .marquee-item {
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--mint); display: flex; align-items: center; gap: 1.5rem;
+    }
+    .marquee-dot { width: 4px; height: 4px; background: var(--sage); border-radius: 50%; display: inline-block; }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ── ABOUT ── */
+    #about { background: var(--white); }
+    .about-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6rem; align-items: center;
+    }
+    .about-visual {
+      position: relative; height: 480px;
+    }
+    .about-card {
+      position: absolute; border-radius: 24px;
+      padding: 1.5rem 1.8rem;
+      box-shadow: 0 20px 50px rgba(27,67,50,0.1);
+    }
+    .about-card-main {
+      width: 75%; height: 350px; left: 0; top: 50%;
+      transform: translateY(-50%);
+      background: linear-gradient(160deg, var(--forest), var(--mid));
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .about-card-main-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; color: white; font-weight: 300;
+      line-height: 1.2; margin-bottom: 0.5rem;
+    }
+    .about-card-main-sub {
+      font-size: 0.78rem; color: rgba(255,255,255,0.6);
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .about-card-float {
+      width: 58%; right: 0; top: 15%;
+      background: var(--mint);
+      padding: 1.4rem;
+    }
+    .about-card-float-title {
+      font-size: 0.72rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--forest); margin-bottom: 0.8rem;
+    }
+    .about-tag-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .about-tag {
+      background: var(--sage); color: white;
+      padding: 0.3rem 0.8rem; border-radius: 50px;
+      font-size: 0.72rem; font-weight: 500;
+    }
+    .about-card-bottom {
+      width: 58%; right: 0; bottom: 5%;
+      background: white; border: 1px solid rgba(27,67,50,0.08);
+    }
+    .about-card-bottom-title {
+      font-size: 0.72rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--sage); margin-bottom: 0.5rem;
+    }
+    .about-card-bottom p {
+      font-size: 0.82rem; color: var(--forest);
+      font-weight: 400; line-height: 1.5;
+    }
+    .about-highlights { display: flex; flex-direction: column; gap: 1.4rem; margin-top: 2rem; }
+    .about-highlight {
+      display: flex; align-items: flex-start; gap: 1rem;
+    }
+    .about-highlight-icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: var(--mint); display: flex;
+      align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .about-highlight h4 {
+      font-size: 0.9rem; font-weight: 600;
+      color: var(--forest); margin-bottom: 0.25rem;
+    }
+    .about-highlight p { font-size: 0.85rem; color: #3d5a47; font-weight: 300; line-height: 1.6; }
+
+    /* ── REQUEST SAMPLES ── */
+    #samples {
+      background: var(--forest);
+      position: relative; overflow: hidden;
+    }
+    .samples-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 80% 50%, rgba(82,183,136,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(216,243,220,0.06) 0%, transparent 60%);
+    }
+    .samples-inner {
+      max-width: 1100px; margin: 0 auto; position: relative; z-index: 2;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center;
+    }
+    .samples-text .section-tag { color: var(--sage); }
+    .samples-text .section-title { color: white; }
+    .samples-text .section-body { color: rgba(255,255,255,0.65); }
+    .samples-price {
+      margin-top: 2rem;
+      display: inline-flex; align-items: baseline; gap: 0.4rem;
+    }
+    .price-sym { font-size: 1.2rem; color: var(--sage); font-weight: 600; }
+    .price-amt { font-family: 'Cormorant Garamond', serif; font-size: 4rem; font-weight: 600; color: white; line-height: 1; }
+    .price-unit { font-size: 0.8rem; color: rgba(255,255,255,0.5); }
+    .samples-form {
+      background: white; border-radius: 28px;
+      padding: 2.8rem; box-shadow: 0 30px 80px rgba(0,0,0,0.2);
+    }
+    .form-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; color: var(--forest);
+      margin-bottom: 0.3rem;
+    }
+    .form-sub { font-size: 0.82rem; color: #3d5a47; margin-bottom: 2rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+      display: block; font-size: 0.75rem; font-weight: 500;
+      color: var(--forest); letter-spacing: 0.06em;
+      text-transform: uppercase; margin-bottom: 0.45rem;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 0.85rem 1rem;
+      border: 1.5px solid rgba(27,67,50,0.15);
+      border-radius: 12px; font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem; color: var(--ink);
+      background: var(--cream);
+      transition: border-color 0.3s, box-shadow 0.3s;
+      outline: none;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--sage);
+      box-shadow: 0 0 0 3px rgba(82,183,136,0.12);
+      background: white;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-submit {
+      width: 100%; padding: 1rem; margin-top: 0.5rem;
+      background: var(--forest); color: white;
+      border: none; border-radius: 50px; cursor: pointer;
+      font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 500;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      transition: all 0.35s ease;
+    }
+    .form-submit:hover {
+      background: var(--sage);
+      box-shadow: 0 10px 30px rgba(82,183,136,0.35);
+      transform: translateY(-2px);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink); padding: 5rem 5vw 3rem;
+    }
+    .footer-inner {
+      max-width: 1200px; margin: 0 auto;
+    }
+    .footer-top {
+      display: grid; grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 4rem; margin-bottom: 4rem;
+    }
+    .footer-brand .nav-logo { font-size: 1.8rem; display: block; margin-bottom: 1rem; }
+    .footer-brand p {
+      font-size: 0.85rem; color: rgba(255,255,255,0.45);
+      line-height: 1.7; max-width: 280px;
+    }
+    .footer-col h5 {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--sage); margin-bottom: 1.2rem;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 0.6rem; }
+    .footer-col ul a {
+      font-size: 0.85rem; color: rgba(255,255,255,0.5);
+      text-decoration: none; transition: color 0.25s;
+    }
+    .footer-col ul a:hover { color: white; }
+    .footer-col p {
+      font-size: 0.85rem; color: rgba(255,255,255,0.5);
+      line-height: 1.8;
+    }
+    .footer-divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin-bottom: 2rem; }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-bottom p { font-size: 0.78rem; color: rgba(255,255,255,0.3); }
+    .social-links { display: flex; gap: 1rem; }
+    .social-link {
+      width: 38px; height: 38px; border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; font-size: 0.85rem;
+      color: rgba(255,255,255,0.5); transition: all 0.3s;
+    }
+    .social-link:hover {
+      background: var(--sage); border-color: var(--sage);
+      color: white; transform: translateY(-2px);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideLeft {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 900px) {
+      .hero-grid, .philosophy-inner, .about-inner, .samples-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-visual { order: -1; }
+      .straw-showcase { width: 220px; height: 300px; margin: 0 auto; }
+      .straw-card-main { width: 180px; height: 250px; }
+      .straw-badge { width: 70px; height: 70px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .product-panel { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+      nav .nav-links { display: none; }
+      .about-visual { height: 280px; }
+      .philosophy-cards { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#hero" class="nav-logo">Eco<span>-Flo</span></a>
+    <ul class="nav-links">
+      <li><a href="#philosophy">Philosophy</a></li>
+      <li><a href="#product">Product</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#samples" class="nav-cta">Request Sample</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg-leaf"></div>
+    <div class="hero-grid">
+      <div class="hero-text">
+        <p class="hero-tagline">Patent Pending · NABL Certified · FSSAI Compliant</p>
+        <h1 class="hero-title">Sip Slow,<br>We Won't Go <em>Soggy</em></h1>
+        <p class="hero-subtitle">Engineered for endurance, designed for the planet. Eco-Flo straws deliver 120+ minutes of structural integrity — without the plastic.</p>
+        <div class="hero-actions">
+          <a href="#product" class="btn-primary">Explore the Product</a>
+          <a href="#samples" class="btn-outline">Request Samples</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="straw-showcase">
+          <div class="straw-card straw-card-main">
+            <div class="straw-visual-inner">
+              <div class="straw-stick"></div>
+              <div class="straw-label">Eco-Shield™<br>Technology</div>
+            </div>
+          </div>
+          <div class="straw-badge">
+            <span>120+</span>mins stable
+          </div>
+          <div class="straw-tag">🌱 Home Compostable · 120 days</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-strip">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <div class="stat-number">120+</div>
+        <div class="stat-label">Minutes of Stability</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-1">
+        <div class="stat-number">120</div>
+        <div class="stat-label">Days to Compost</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-2">
+        <div class="stat-number">0</div>
+        <div class="stat-label">Microplastics Left</div>
+      </div>
+      <div class="stat-item reveal reveal-delay-3">
+        <div class="stat-number">₹1</div>
+        <div class="stat-label">Starting Per Straw</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHILOSOPHY -->
+  <section id="philosophy">
+    <div class="philosophy-inner">
+      <div class="philosophy-text reveal">
+        <p class="section-tag">Our Philosophy</p>
+        <h2 class="section-title">Sustainability Should Not<br>Be <em>Fragile</em></h2>
+        <p class="section-body">We believe you shouldn't have to choose between saving the planet and enjoying a good drink. Eco-Flo was born to solve the soggy straw problem — replacing single-use plastics with innovative, biodegradable materials that actually work.</p>
+        <blockquote class="philosophy-quote">"Our mission is simple: high-quality products that leave zero footprint behind."</blockquote>
+      </div>
+      <div class="philosophy-cards reveal reveal-delay-2">
+        <div class="philo-card">
+          <div class="philo-icon">☕</div>
+          <h4>Cafés & Restaurants</h4>
+          <p>Premium drinking experience without the sogginess or environmental cost of plastic.</p>
+        </div>
+        <div class="philo-card">
+          <div class="philo-icon">✈️</div>
+          <h4>Airlines & Hospitality</h4>
+          <p>Where presentation, reliability, and sustainability all matter simultaneously.</p>
+        </div>
+        <div class="philo-card">
+          <div class="philo-icon">🍹</div>
+          <h4>Beverage Brands</h4>
+          <p>Flexible bulk ordering with hygienic single-wrap packaging options available.</p>
+        </div>
+        <div class="philo-card">
+          <div class="philo-icon">🌍</div>
+          <h4>Planet First</h4>
+          <p>No industrial facility needed — breaks down naturally without leaving microplastics.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-item">Eco-Shield™ Technology <span class="marquee-dot"></span></span>
+      <span class="marquee-item">NABL Food Grade Certified <span class="marquee-dot"></span></span>
+      <span class="marquee-item">FSSAI Compliant <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Patent Pending <span class="marquee-dot"></span></span>
+      <span class="marquee-item">100% Home Compostable <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Zero Microplastics <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Plant-Based Derivatives <span class="marquee-dot"></span></span>
+      <span class="marquee-item">120+ Minutes Stable <span class="marquee-dot"></span></span>
+      <!-- duplicate for seamless loop -->
+      <span class="marquee-item">Eco-Shield™ Technology <span class="marquee-dot"></span></span>
+      <span class="marquee-item">NABL Food Grade Certified <span class="marquee-dot"></span></span>
+      <span class="marquee-item">FSSAI Compliant <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Patent Pending <span class="marquee-dot"></span></span>
+      <span class="marquee-item">100% Home Compostable <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Zero Microplastics <span class="marquee-dot"></span></span>
+      <span class="marquee-item">Plant-Based Derivatives <span class="marquee-dot"></span></span>
+      <span class="marquee-item">120+ Minutes Stable <span class="marquee-dot"></span></span>
+    </div>
+  </div>
+
+  <!-- PRODUCT -->
+  <section id="product">
+    <div class="product-inner">
+      <div class="product-header reveal">
+        <p class="section-tag">The Product</p>
+        <h2 class="section-title">Built for <em>Real Use</em></h2>
+        <p class="section-body">Three pillars that make Eco-Flo the straw that brands actually trust.</p>
+      </div>
+      <div class="product-tabs reveal reveal-delay-1">
+        <button class="tab-btn active" data-panel="performance">Performance</button>
+        <button class="tab-btn" data-panel="material">Material</button>
+        <button class="tab-btn" data-panel="responsibility">Responsibility</button>
+      </div>
+      <div class="product-panels">
+
+        <div class="product-panel active" id="panel-performance">
+          <div class="panel-text">
+            <p class="section-tag">Performance</p>
+            <h3 class="section-title">Stop Racing Against<br>Your <em>Drink</em></h3>
+            <ul class="feature-list">
+              <li><strong>120+ Minutes of Stability</strong> — Stays structurally sound in both cold and room-temperature beverages.</li>
+              <li><strong>Anti-Soggy Technology</strong> — No collapsing, no bending, and no paper pulp in your mouth.</li>
+              <li><strong>Structural Integrity</strong> — From the first sip to the last, it performs exactly like a straw should.</li>
+            </ul>
+          </div>
+          <div class="panel-visual">
+            <div class="panel-visual-bg viz-performance">
+              <div class="viz-icon">⏱</div>
+              <div class="viz-content">
+                <div class="viz-number">120+</div>
+                <div class="viz-unit">minutes of stability</div>
+                <div class="cert-badges">
+                  <span class="cert-badge">Cold Beverages</span>
+                  <span class="cert-badge">Room Temperature</span>
+                  <span class="cert-badge">Thick Shakes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-panel" id="panel-material">
+          <div class="panel-text">
+            <p class="section-tag">Material</p>
+            <h3 class="section-title">The Science Behind<br>the <em>Straw</em></h3>
+            <ul class="feature-list">
+              <li><strong>Eco-Shield™ Hydrophobic Barrier</strong> — Naturally repels liquid to prevent fiber swelling.</li>
+              <li><strong>Pure Experience</strong> — Odorless, tasteless, and food-safe — your drink tastes exactly as intended.</li>
+              <li><strong>Uniform Protective Layer</strong> — Precisely applied coating ensures consistent resistance across the entire surface, eliminating weak points.</li>
+            </ul>
+          </div>
+          <div class="panel-visual">
+            <div class="panel-visual-bg viz-material">
+              <div class="viz-icon">🧪</div>
+              <div class="viz-content">
+                <div class="viz-number" style="font-size:3.5rem">Eco-Shield™</div>
+                <div class="viz-unit">hydrophobic coating</div>
+                <div class="cert-badges">
+                  <span class="cert-badge">Plant-Based</span>
+                  <span class="cert-badge">Odorless</span>
+                  <span class="cert-badge">Tasteless</span>
+                  <span class="cert-badge">Food-Safe</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-panel" id="panel-responsibility">
+          <div class="panel-text">
+            <p class="section-tag">Responsibility</p>
+            <h3 class="section-title">Designed to Leave<br><em>Nothing</em> Behind</h3>
+            <ul class="feature-list">
+              <li><strong>100% Naturally Compostable</strong> — Unlike PLA straws requiring industrial facilities, Eco-Flo breaks down naturally without leaving microplastics.</li>
+              <li><strong>Non-Toxic & FSSAI Compliant</strong> — Materials that are both user-friendly and planet-friendly.</li>
+              <li><strong>NABL Food Grade Certified</strong> — Independently verified for safety and quality standards.</li>
+            </ul>
+          </div>
+          <div class="panel-visual">
+            <div class="panel-visual-bg viz-responsibility">
+              <div class="viz-icon">♻️</div>
+              <div class="viz-content">
+                <div class="viz-number">120</div>
+                <div class="viz-unit">days to fully compost</div>
+                <div class="cert-badges">
+                  <span class="cert-badge">NABL Certified</span>
+                  <span class="cert-badge">FSSAI Compliant</span>
+                  <span class="cert-badge">0 Microplastics</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-inner">
+      <div class="about-visual reveal">
+        <div class="about-card about-card-main">
+          <div class="about-card-main-label">Born to Solve<br>the Soggy<br>Straw Problem</div>
+          <div class="about-card-main-sub">Est. Indore, Madhya Pradesh</div>
+        </div>
+        <div class="about-card about-card-float">
+          <div class="about-card-float-title">Target Industries</div>
+          <div class="about-tag-row">
+            <span class="about-tag">Cafés</span>
+            <span class="about-tag">Airlines</span>
+            <span class="about-tag">Hotels</span>
+            <span class="about-tag">QSR</span>
+            <span class="about-tag">Beverages</span>
+          </div>
+        </div>
+        <div class="about-card about-card-bottom">
+          <div class="about-card-bottom-title">Location</div>
+          <p>504, Shekhar Central<br>New Palasia, Indore — 452001<br>Madhya Pradesh, India</p>
+        </div>
+      </div>
+      <div class="about-text reveal reveal-delay-2">
+        <p class="section-tag">About Eco-Flo</p>
+        <h2 class="section-title">We Believe You Shouldn't Have to <em>Choose</em></h2>
+        <p class="section-body">Between saving the planet and enjoying a good drink. Eco-Flo Industries was built on one conviction: sustainability and performance are not opposites.</p>
+        <div class="about-highlights">
+          <div class="about-highlight">
+            <div class="about-highlight-icon">🥤</div>
+            <div>
+              <h4>Built to Last</h4>
+              <p>Whether it's an iced coffee or a thick shake, Eco-Flo stays strong and firm throughout.</p>
+            </div>
+          </div>
+          <div class="about-highlight">
+            <div class="about-highlight-icon">🌱</div>
+            <div>
+              <h4>100% Earth-Safe</h4>
+              <p>No plastic, no chemicals. Fully compostable and biodegradable — returns to nature without harm.</p>
+            </div>
+          </div>
+          <div class="about-highlight">
+            <div class="about-highlight-icon">📦</div>
+            <div>
+              <h4>Made for Business</h4>
+              <p>Flexible bulk ordering with hygienic, single-wrap packaging options for cafés and distributors.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REQUEST SAMPLES -->
+  <section id="samples">
+    <div class="samples-bg"></div>
+    <div class="samples-inner">
+      <div class="samples-text reveal">
+        <p class="section-tag">Request Samples</p>
+        <h2 class="section-title">Try It Before<br>You <em>Commit</em></h2>
+        <p class="section-body">Experience the Eco-Flo difference first-hand. We send product samples so your team can verify the quality, consistency, and feel before placing a bulk order.</p>
+        <div class="samples-price">
+          <span class="price-sym">₹</span>
+          <span class="price-amt">1</span>
+          <span class="price-unit">/ per straw (starting)</span>
+        </div>
+        <div style="margin-top:2.5rem; display:flex; flex-direction:column; gap:0.6rem;">
+          <div style="font-size:0.82rem; color:rgba(255,255,255,0.5); display:flex; gap:0.8rem; align-items:center;">
+            <span style="color:var(--sage)">✓</span> Quick turnaround on sample dispatch
+          </div>
+          <div style="font-size:0.82rem; color:rgba(255,255,255,0.5); display:flex; gap:0.8rem; align-items:center;">
+            <span style="color:var(--sage)">✓</span> Available in multiple sizes & variants
+          </div>
+          <div style="font-size:0.82rem; color:rgba(255,255,255,0.5); display:flex; gap:0.8rem; align-items:center;">
+            <span style="color:var(--sage)">✓</span> Custom branding discussions available
+          </div>
+        </div>
+      </div>
+      <div class="samples-form reveal reveal-delay-2">
+        <div class="form-title">Sample Request Form</div>
+        <div class="form-sub">We'll get back to you within 24 hours.</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="Your name" />
+          </div>
+          <div class="form-group">
+            <label>Business Name</label>
+            <input type="text" placeholder="Your company" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" placeholder="you@company.com" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" placeholder="+91 XXXXX XXXXX" />
+          </div>
+          <div class="form-group">
+            <label>Business Type</label>
+            <select>
+              <option value="">Select type</option>
+              <option>Café / Restaurant</option>
+              <option>Hotel / Hospitality</option>
+              <option>Airline</option>
+              <option>Beverage Brand</option>
+              <option>Distributor</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Message (optional)</label>
+          <textarea placeholder="Estimated quantity, specific requirements..."></textarea>
+        </div>
+        <button class="form-submit">Send Sample Request →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="#hero" class="nav-logo">Eco<span>-Flo</span></a>
+          <p>Engineered for endurance, designed for the planet. The straw that refuses to go soggy.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Quick Links</h5>
+          <ul>
+            <li><a href="#philosophy">Philosophy</a></li>
+            <li><a href="#product">Product</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#samples">Request Samples</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <p>504, Shekhar Central<br>New Palasia, Indore<br>Madhya Pradesh — 452001</p>
+          <p style="margin-top:1rem;">+91 99816 86235<br>+91 88898 81661</p>
+          <p style="margin-top:0.5rem;">hello@ecoflostraws.com</p>
+        </div>
+      </div>
+      <hr class="footer-divider"/>
+      <div class="footer-bottom">
+        <p>© 2025 Eco-Flo Industries Private Limited. All rights reserved.</p>
+        <div class="social-links">
+          <a href="https://www.linkedin.com/company/eco-flo-industries-private-limited/" class="social-link" target="_blank" rel="noopener">in</a>
+          <a href="https://www.instagram.com/ecofloplanet" class="social-link" target="_blank" rel="noopener">ig</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button, .philo-card').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
+    });
+
+    // Sticky nav
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(r => observer.observe(r));
+
+    // Product tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.product-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+      });
+    });
+
+    // Counter animation
+    function animateCount(el, target, suffix='') {
+      let start = 0, duration = 1800;
+      const step = timestamp => {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = (suffix === '₹' ? '₹' : '') + Math.floor(eased * target) + (suffix !== '₹' ? suffix : '');
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+    const statsObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const nums = e.target.querySelectorAll('.stat-number');
+          nums.forEach(n => {
+            const text = n.textContent.trim();
+            if (text === '120+') animateCount(n, 120, '+');
+            else if (text === '120') animateCount(n, 120, '');
+            else if (text === '0') animateCount(n, 0, '');
+            else if (text === '₹1') { n.textContent = '₹1'; }
+          });
+          statsObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.stats-strip').forEach(s => statsObserver.observe(s));
+
+    // Form submit
+    document.querySelector('.form-submit').addEventListener('click', function() {
+      this.textContent = '✓ Request Sent!';
+      this.style.background = 'var(--sage)';
+      setTimeout(() => {
+        this.textContent = 'Send Sample Request →';
+        this.style.background = '';
+      }, 3000);
+    });
+  </script>
+</body>
+</html>
